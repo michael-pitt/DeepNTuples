@@ -222,10 +222,12 @@ public:
     float muons_relEta_[max_num_lept]; 
     float muons_relPhi_[max_num_lept]; 
     float muons_energy_[max_num_lept]; 
+    float muons_charge_[max_num_lept];
     float electrons_pt_[max_num_lept]; 
     float electrons_relEta_[max_num_lept]; 
     float electrons_relPhi_[max_num_lept]; 
     float electrons_energy_[max_num_lept];
+    float electrons_charge_[max_num_lept];
 
     int muons_number_ = 0;
     int electrons_number_ = 0;

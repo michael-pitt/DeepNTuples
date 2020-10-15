@@ -118,11 +118,12 @@ void ntuple_JetInfo::initBranches(TTree* tree){
     addBranch(tree,"muons_relEta", &muons_relEta_, "muons_relEta_[muons_number_]/f");
     addBranch(tree,"muons_relPhi", &muons_relPhi_, "muons_relPhi_[muons_number_]/f");
     addBranch(tree,"muons_energy", &muons_energy_, "muons_energy_[muons_number_]/f");
+    addBranch(tree,"muons_charge", &muons_charge_, "muons_charge_[muons_number_]/f");
     addBranch(tree,"electrons_pt", &electrons_pt_, "electrons_pt_[electrons_number_]/f");
     addBranch(tree,"electrons_relEta", &electrons_relEta_, "electrons_relEta_[electrons_number_]/f");
     addBranch(tree,"electrons_relPhi", &electrons_relPhi_, "electrons_relPhi_[electrons_number_]/f");
     addBranch(tree,"electrons_energy", &electrons_energy_, "electrons_energy_[electrons_number_]/f");
-
+    addBranch(tree,"electrons_charge", &electrons_charge_, "electrons_charge_[electrons_number_]/f");
 
     addBranch(tree,"gen_pt_Recluster"    ,&gen_pt_Recluster_    ,"gen_pt_Recluster_/f"    );
     addBranch(tree,"gen_pt_WithNu"    ,&gen_pt_WithNu_    ,"gen_pt_WithNu_/f"    );
@@ -324,6 +325,7 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
             muons_relEta_[i] = etasign*(muon.eta()-jet.eta());
             muons_relPhi_[i] = reco::deltaPhi(muon.phi(),jet.phi());
             muons_energy_[i] = muon.energy()/jet.energy();
+			muons_charge_[i] = muon.charge();
         }
         if (i < elecIds.size()) {
             const auto & electron = (*electronsHandle).at(elecIds.at(i));
@@ -331,6 +333,7 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
             electrons_relEta_[i] = etasign*(electron.eta()-jet.eta());
             electrons_relPhi_[i] = reco::deltaPhi(electron.phi(),jet.phi());
             electrons_energy_[i] = electron.energy()/jet.energy();
+			electrons_charge_[i] = electron.charge();
         }
     }
 
