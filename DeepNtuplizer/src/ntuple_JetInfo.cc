@@ -42,6 +42,9 @@ void ntuple_JetInfo::initBranches(TTree* tree){
 
     // truth labels
     addBranch(tree,"gen_pt"    ,&gen_pt_    ,"gen_pt_/f"    );
+    addBranch(tree,"gen_parton_pdgid"    ,&gen_parton_pdgid_    ,"gen_parton_pdgid_/I"    );
+    addBranch(tree,"gen_hadron_pdgid"    ,&gen_hadron_pdgid_    ,"gen_hadron_pdgid_/I"    );
+    addBranch(tree,"gen_hadron_pt"    ,&gen_hadron_pt_    ,"gen_hadron_pt_/f"    );
     addBranch(tree,"Delta_gen_pt"    ,&Delta_gen_pt_,"Delta_gen_pt_/f"    );
     addBranch(tree,"isB",&isB_, "isB_/i");
     addBranch(tree,"isGBB",&isGBB_, "isGBB_/i");
@@ -146,6 +149,7 @@ void ntuple_JetInfo::readEvent(const edm::Event& iEvent){
     iEvent.getByToken(genJetMatchWithNuToken_, genJetMatchWithNu);
 
     iEvent.getByToken(genParticlesToken_, genParticlesHandle);
+    iEvent.getByToken(jetFlavourInfosToken_, jetFlavourInfos);
 
 
     iEvent.getByToken(muonsToken_, muonsHandle);
@@ -388,6 +392,22 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
     jet_energy_ = jet.energy();
 
     genDecay_ = -1.;
+    // jet pdgId implementation (using slimmedGenJetsFlavourInfos):
+    gen_parton_pdgid_ = 0; gen_hadron_pdgid_ = 0; gen_hadron_pt_ = -1;
+	for (const reco::JetFlavourInfoMatching & jetFlavourInfoMatching : *jetFlavourInfos) {
+		if (deltaR(jet.p4(), jetFlavourInfoMatching.first->p4()) > 0.4) continue;
+		gen_parton_pdgid_ = jetFlavourInfoMatching.second.getPartonFlavour();
+		const reco::GenParticleRefVector & bHadrons = jetFlavourInfoMatching.second.getbHadrons();
+		if (bHadrons.size()==0) continue;
+		gen_hadron_pdgid_= bHadrons.at(0)->pdgId();
+		gen_hadron_pt_= bHadrons.at(0)->pt();
+		break;
+	}
+	
+	// MP 30/09/2020: skip non b-jets:
+	if(!isPhysBB_ && !isPhysB_ && !isPhysGBB_ && !isPhysLeptonicB_ && !isPhysLeptonicB_C_)
+		returnval=false;
+			
 
     try {
         reco::GenParticleRefVector Bhadrons_in_jet = jet.jetFlavourInfo().getbHadrons();

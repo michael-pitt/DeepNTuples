@@ -169,6 +169,10 @@ DeepNtuplizer::DeepNtuplizer(const edm::ParameterSet& iConfig):
             consumes<reco::GenParticleCollection>(
                     iConfig.getParameter<edm::InputTag>("pruned")));
 
+    jetinfo->setJetInfoToken(
+            consumes<reco::JetFlavourInfoMatchingCollection>(
+                    iConfig.getParameter<edm::InputTag>("jetFlavourInfos")));
+
     jetinfo->setMuonsToken(
             consumes<pat::MuonCollection>(
                     iConfig.getParameter<edm::InputTag>("muons")));

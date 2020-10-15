@@ -8,6 +8,9 @@
 #ifndef DEEPNTUPLES_DEEPNTUPLIZER_INTERFACE_NTUPLE_JETINFO_H_
 #define DEEPNTUPLES_DEEPNTUPLIZER_INTERFACE_NTUPLE_JETINFO_H_
 
+#include "SimDataFormats/JetMatching/interface/JetFlavourInfo.h"
+#include "SimDataFormats/JetMatching/interface/JetFlavourInfoMatching.h"
+
 #include "ntuple_content.h"
 #include "TRandom3.h"
 #include <map>
@@ -62,6 +65,10 @@ public:
         genParticlesToken_ = genParticlesToken;
     }
 
+    void setJetInfoToken(edm::EDGetTokenT<reco::JetFlavourInfoMatchingCollection> jetFlavourInfosToken) {
+        jetFlavourInfosToken_ = jetFlavourInfosToken;
+    }
+    
     void setMuonsToken(edm::EDGetTokenT<pat::MuonCollection> muonsToken) {
         muonsToken_ = muonsToken;
     }
@@ -111,6 +118,9 @@ public:
 
     edm::Handle<pat::MuonCollection> muonsHandle;
     edm::Handle<pat::ElectronCollection> electronsHandle;
+    
+    edm::EDGetTokenT<reco::JetFlavourInfoMatchingCollection> jetFlavourInfosToken_;
+    edm::Handle<reco::JetFlavourInfoMatchingCollection> jetFlavourInfos;
 
 
     TRandom3 TRandom_;
@@ -136,6 +146,9 @@ public:
     // labels (MC truth)
     // regressions pt, Deta, Dphi
     float gen_pt_;
+    int gen_parton_pdgid_;
+    int gen_hadron_pdgid_;
+    float gen_hadron_pt_;
     float Delta_gen_pt_;
     //classification
     int isB_;
