@@ -188,10 +188,11 @@ void ntuple_JetInfo::initBranches(TTree* tree){
 	addBranch(tree,"electrons_gsfCharge", &electrons_gsfCharge_,"electrons_gsfCharge_[en_]/f");
 	addBranch(tree,"electrons_ndof", &electrons_ndof_,"electrons_ndof_[en_]/f");
 	addBranch(tree,"electrons_chi2", &electrons_chi2_,"electrons_chi2_[en_]/f");
-	addBranch(tree,"electrons_SC", &electrons_SC_energy_,"electrons_SC_energy_[en_]/f");
-	addBranch(tree,"electrons_SC", &electrons_SC_deta_,"electrons_SC_deta_[en_]/f");
-	addBranch(tree,"electrons_SC", &electrons_SC_dphi_,"electrons_SC_dphi_[en_]/f");
-	addBranch(tree,"electrons_SC", &electrons_SC_et_,"electrons_SC_et_[en_]/f");
+	addBranch(tree,"electrons_SC_energy", &electrons_SC_energy_,"electrons_SC_energy_[en_]/f");
+	addBranch(tree,"electrons_SC_deta", &electrons_SC_deta_,"electrons_SC_deta_[en_]/f");
+	addBranch(tree,"electrons_SC_dphi", &electrons_SC_dphi_,"electrons_SC_dphi_[en_]/f");
+	addBranch(tree,"electrons_SC_et", &electrons_SC_et_,"electrons_SC_et_[en_]/f");
+	addBranch(tree,"electrons_SC_eSuperClusterOverP", &electrons_SC_eSuperClusterOverP_,"electrons_SC_eSuperClusterOverP_[en_]/f");
 	addBranch(tree,"electrons_scPixCharge", &electrons_scPixCharge_,"electrons_scPixCharge_[en_]/f");
 	addBranch(tree,"electrons_numberOfBrems", &electrons_numberOfBrems_,"electrons_numberOfBrems_[en_]/f");
 	addBranch(tree,"electrons_fbrem", &electrons_fbrem_,"electrons_fbrem_[en_]/f");
@@ -205,7 +206,6 @@ void ntuple_JetInfo::initBranches(TTree* tree){
 	addBranch(tree,"electrons_e1x5Overe5x5", &electrons_e1x5Overe5x5_,"electrons_e1x5Overe5x5_[en_]/f");
 	addBranch(tree,"electrons_e2x5MaxOvere5x5", &electrons_e2x5MaxOvere5x5_,"electrons_e2x5MaxOvere5x5_[en_]/f");
 	addBranch(tree,"electrons_hcalOverEcal", &electrons_hcalOverEcal_,"electrons_hcalOverEcal_[en_]/f");
-	addBranch(tree,"electrons_SC", &electrons_SC_eSuperClusterOverP_,"electrons_SC_eSuperClusterOverP_[en_]/f");
 	addBranch(tree,"electrons_neutralHadronIso", &electrons_neutralHadronIso_,"electrons_neutralHadronIso_[en_]/f");
 	addBranch(tree,"electrons_photonIso", &electrons_photonIso_,"electrons_photonIso_[en_]/f");
 	addBranch(tree,"electrons_puChargedHadronIso", &electrons_puChargedHadronIso_,"electrons_puChargedHadronIso_[en_]/f");
