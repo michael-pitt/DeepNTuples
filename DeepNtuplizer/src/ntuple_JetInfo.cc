@@ -109,21 +109,23 @@ void ntuple_JetInfo::initBranches(TTree* tree){
 
     addBranch(tree,"muons_number", &muons_number_, "muons_number_/f");
     addBranch(tree,"electrons_number", &electrons_number_, "electrons_number_/f");
+    addBranch(tree,"mn", &mn_, "mn_/i");
+    addBranch(tree,"en", &en_, "en_/i");
 
-    addBranch(tree,"muons_isLooseMuon", &muons_isLooseMuon_, "muons_isLooseMuon_[muons_number_]/f");
-    addBranch(tree,"muons_isTightMuon", &muons_isTightMuon_, "muons_isTightMuon_[muons_number_]/f");
-    addBranch(tree,"muons_isSoftMuon", &muons_isSoftMuon_, "muons_isSoftMuon_[muons_number_]/f");
-    addBranch(tree,"muons_isHighPtMuon", &muons_isHighPtMuon_, "muons_isHighPtMuon_[muons_number_]/f");
-    addBranch(tree,"muons_pt", &muons_pt_, "muons_pt_[muons_number_]/f");
-    addBranch(tree,"muons_relEta", &muons_relEta_, "muons_relEta_[muons_number_]/f");
-    addBranch(tree,"muons_relPhi", &muons_relPhi_, "muons_relPhi_[muons_number_]/f");
-    addBranch(tree,"muons_energy", &muons_energy_, "muons_energy_[muons_number_]/f");
-    addBranch(tree,"muons_charge", &muons_charge_, "muons_charge_[muons_number_]/f");
-    addBranch(tree,"electrons_pt", &electrons_pt_, "electrons_pt_[electrons_number_]/f");
-    addBranch(tree,"electrons_relEta", &electrons_relEta_, "electrons_relEta_[electrons_number_]/f");
-    addBranch(tree,"electrons_relPhi", &electrons_relPhi_, "electrons_relPhi_[electrons_number_]/f");
-    addBranch(tree,"electrons_energy", &electrons_energy_, "electrons_energy_[electrons_number_]/f");
-    addBranch(tree,"electrons_charge", &electrons_charge_, "electrons_charge_[electrons_number_]/f");
+    addBranch(tree,"muons_isLooseMuon", &muons_isLooseMuon_, "muons_isLooseMuon_[mn_]/f");
+    addBranch(tree,"muons_isTightMuon", &muons_isTightMuon_, "muons_isTightMuon_[mn_]/f");
+    addBranch(tree,"muons_isSoftMuon", &muons_isSoftMuon_, "muons_isSoftMuon_[mn_]/f");
+    addBranch(tree,"muons_isHighPtMuon", &muons_isHighPtMuon_, "muons_isHighPtMuon_[mn_]/f");
+    addBranch(tree,"muons_pt", &muons_pt_, "muons_pt_[mn_]/f");
+    addBranch(tree,"muons_relEta", &muons_relEta_, "muons_relEta_[mn_]/f");
+    addBranch(tree,"muons_relPhi", &muons_relPhi_, "muons_relPhi_[mn_]/f");
+    addBranch(tree,"muons_energy", &muons_energy_, "muons_energy_[mn_]/f");
+    addBranch(tree,"muons_charge", &muons_charge_, "muons_charge_[mn_]/f");
+    addBranch(tree,"electrons_pt", &electrons_pt_, "electrons_pt_[en_]/f");
+    addBranch(tree,"electrons_relEta", &electrons_relEta_, "electrons_relEta_[en_]/f");
+    addBranch(tree,"electrons_relPhi", &electrons_relPhi_, "electrons_relPhi_[en_]/f");
+    addBranch(tree,"electrons_energy", &electrons_energy_, "electrons_energy_[en_]/f");
+    addBranch(tree,"electrons_charge", &electrons_charge_, "electrons_charge_[en_]/f");
 
     addBranch(tree,"gen_pt_Recluster"    ,&gen_pt_Recluster_    ,"gen_pt_Recluster_/f"    );
     addBranch(tree,"gen_pt_WithNu"    ,&gen_pt_WithNu_    ,"gen_pt_WithNu_/f"    );
@@ -308,8 +310,8 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
     auto muIds = deep_ntuples::jet_muonsIds(jet,*muonsHandle);
     auto elecIds = deep_ntuples::jet_electronsIds(jet,*electronsHandle);
 
-    muons_number_ = float(muIds.size());
-    electrons_number_ = float(elecIds.size());
+    mn_ = 0;
+    en_ = 0;
 
     float etasign = 1.;
     if (jet.eta()<0) etasign = -1.;
@@ -326,6 +328,37 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
             muons_relPhi_[i] = reco::deltaPhi(muon.phi(),jet.phi());
             muons_energy_[i] = muon.energy()/jet.energy();
 			muons_charge_[i] = muon.charge();
+            // Extra vars
+            muons_isGlobal_[i] = float(muon.isLooseMuon());
+            muons_isStandAlone_[i] = float(muon.isStandAloneMuon());
+            muons_jetDeltaR_[i] = reco::deltaR(muon, jet);
+            muons_numberOfMatchedStations_[i] = muon.numberOfMatchedStations();
+            muons_2dIP_[i] = muon.dB();
+            muons_2dIPSig_[i] = muon.dB()/muon.edB();
+            muons_3dIP_[i] = muon.dB(pat::Muon::PV3D);
+            muons_3dIPSig_[i] = muon.dB(pat::Muon::PV3D)/muon.edB(pat::Muon::PV3D);
+            muons_dxy_[i] = muon.bestTrack()->dxy(vertices()->at(0).position());
+            muons_dxyError_[i] = muon.bestTrack()->dxyError();
+            muons_dxySig_[i] = muon.bestTrack()->dxy(vertices()->at(0).position())/muon.bestTrack()->dxyError(); 
+            muons_dz_[i] = muon.bestTrack()->dz(vertices()->at(0).position());
+            muons_dzError_[i] = muon.bestTrack()->dzError();
+            muons_numberOfValidPixelHits_[i] = muon.bestTrack()->hitPattern().numberOfValidPixelHits();
+            muons_numberOfpixelLayersWithMeasurement_[i] = muon.bestTrack()->hitPattern().pixelLayersWithMeasurement();
+            muons_numberOfstripLayersWithMeasurement_[i] = muon.bestTrack()->hitPattern().stripLayersWithMeasurement();
+            muons_chi2_[i] = muon.bestTrack()->chi2();
+            muons_ndof_[i] = muon.bestTrack()->ndof();
+            muons_caloIso_[i] =  muon.caloIso()/muon.pt();
+            muons_ecalIso_[i] =  muon.ecalIso()/muon.pt(); 
+            muons_hcalIso_[i] =  muon.hcalIso()/muon.pt();     
+            muons_sumPfChHadronPt_[i]  = muon.pfIsolationR04().sumChargedHadronPt/muon.pt();
+            muons_sumPfNeuHadronEt_[i]  = muon.pfIsolationR04().sumNeutralHadronEt/muon.pt();
+            muons_Pfpileup_[i]  = muon.pfIsolationR04().sumPUPt/muon.pt();
+            muons_sumPfPhotonEt_[i] = muon.pfIsolationR04().sumPhotonEt/muon.pt();
+            muons_sumPfChHadronPt03_[i]  = muon.pfIsolationR03().sumChargedHadronPt/muon.pt();
+            muons_sumPfNeuHadronEt03_[i]  = muon.pfIsolationR03().sumNeutralHadronEt/muon.pt();
+            muons_Pfpileup03_[i]  = muon.pfIsolationR03().sumPUPt/muon.pt();
+            muons_sumPfPhotonEt03_[i] = muon.pfIsolationR03().sumPhotonEt/muon.pt();       
+			mn_++;
         }
         if (i < elecIds.size()) {
             const auto & electron = (*electronsHandle).at(elecIds.at(i));
@@ -334,8 +367,120 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
             electrons_relPhi_[i] = reco::deltaPhi(electron.phi(),jet.phi());
             electrons_energy_[i] = electron.energy()/jet.energy();
 			electrons_charge_[i] = electron.charge();
+            // Extra vars
+			electrons_jetDeltaR_[i] = reco::deltaR(electron,jet); 
+			electrons_EtFromCaloEn_[i] = electron.caloEnergy() * sin(electron.p4().theta())/ electron.pt();
+			electrons_ecalDrivenSeed_[i] = electron.ecalDrivenSeed();
+
+			electrons_isEB_[i] = electron.isEB();
+			electrons_isEE_[i] = electron.isEE();
+			electrons_ecalEnergy_[i] = electron.ecalEnergy()/electron.pt();
+			electrons_isPassConversionVeto_[i] = electron.passConversionVeto();
+			if(electron.convDist() >= 0.){
+				electrons_convDist_[i] = electron.convDist(); 
+				electrons_convFlags_[i] = electron.convFlags(); 
+				electrons_convRadius_[i] = electron.convRadius();
+			}
+			else{
+				electrons_convDist_[i] = -1.; 
+				electrons_convFlags_[i] = -1.; 
+				electrons_convRadius_[i] = -1.;
+			}
+
+
+			electrons_3dIP_[i] = electron.dB(pat::Electron::PV3D); 
+			electrons_3dIPSig_[i] = electron.dB(pat::Electron::PV3D); 
+			electrons_2dIP_[i] = electron.dB();
+			electrons_2dIPSig_[i] = electron.dB()/electron.edB();
+
+			if (std::isnan(electrons_2dIPSig_[i]) || std::isnan(electrons_3dIPSig_[i]))
+			{
+				electrons_2dIPSig_[i] = 0.;
+				electrons_3dIPSig_[i] = 0.;
+			}
+
+			electrons_sCseedEta_[i] = electron.superCluster()->seed()->eta();
+
+
+			electrons_eSeedClusterOverP_[i] = electron.eSeedClusterOverP();
+			electrons_eSeedClusterOverPout_[i] = electron.eSeedClusterOverPout();
+			electrons_eSuperClusterOverP_[i] = electron.eSuperClusterOverP();
+			electrons_hadronicOverEm_[i] = electron.hadronicOverEm();
+
+
+			electrons_deltaEtaEleClusterTrackAtCalo_[i] = electron.deltaEtaEleClusterTrackAtCalo();
+			electrons_deltaPhiEleClusterTrackAtCalo_[i] = electron.deltaPhiEleClusterTrackAtCalo();
+
+			electrons_deltaEtaSeedClusterTrackAtCalo_[i] = electron.deltaEtaSeedClusterTrackAtCalo(); 
+			electrons_deltaPhiSeedClusterTrackAtCalo_[i] = electron.deltaPhiSeedClusterTrackAtCalo(); 
+
+			electrons_deltaEtaSeedClusterTrackAtVtx_[i] = electron.deltaEtaSeedClusterTrackAtVtx(); 
+			electrons_deltaEtaSuperClusterTrackAtVtx_[i] = electron.deltaEtaSuperClusterTrackAtVtx();  
+			electrons_deltaPhiSuperClusterTrackAtVtx_[i] = electron.deltaPhiSuperClusterTrackAtVtx();
+
+			electrons_dxy_[i] = electron.gsfTrack()->dxy(vertices()->at(0).position());
+			electrons_dz_[i] = electron.gsfTrack()->dz(vertices()->at(0).position());
+			electrons_nbOfMissingHits_[i] = electron.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
+			electrons_gsfCharge_[i] = electron.gsfTrack()->charge();
+			electrons_ndof_[i] = electron.gsfTrack()->ndof(); 
+			electrons_chi2_[i] = electron.gsfTrack()->chi2();
+			electrons_SC_energy_[i] = electron.superCluster()->energy()/electron.pt(); 
+			electrons_SC_deta_[i] = electron.superCluster()->eta()-electron.gsfTrack()->eta();
+			electrons_SC_dphi_[i] = reco::deltaPhi(electron.superCluster()->phi(),electron.gsfTrack()->phi());
+			electrons_SC_et_[i] = electron.superCluster()->energy() * sin(electron.p4().theta())/electron.pt();
+			electrons_scPixCharge_[i] = electron.scPixCharge();
+			electrons_numberOfBrems_[i] = electron.numberOfBrems();
+			if(electron.pt() >= 5.){
+				electrons_fbrem_[i] = electron.fbrem();
+				electrons_sigmaEtaEta_[i] = electron.sigmaEtaEta();
+				electrons_sigmaIetaIeta_[i] = electron.sigmaIetaIeta();
+				electrons_sigmaIphiIphi_[i] = electron.sigmaIphiIphi();
+				electrons_r9_[i] = electron.r9();
+				electrons_superClusterFbrem_[i] = electron.superClusterFbrem();
+			}
+			else 
+			{
+				electrons_fbrem_[i] = -1.;
+				electrons_sigmaEtaEta_[i] = -1.;
+				electrons_sigmaIetaIeta_[i] = -1.;
+				electrons_sigmaIphiIphi_[i] = -1;
+				electrons_superClusterFbrem_[i] = -1.;
+			}
+			electrons_e5x5_[i] = electron.e5x5();
+			electrons_e5x5Rel_[i] = electron.e5x5()/jet.pt();
+			electrons_e1x5Overe5x5_[i] = electron.e1x5()/electron.e5x5();
+			electrons_e2x5MaxOvere5x5_[i] = electron.e2x5Max()/electron.e5x5();
+			if (electron.e5x5() == 0){
+				electrons_e1x5Overe5x5_[i] = -1.;
+				electrons_e2x5MaxOvere5x5_[i] = -1.;
+			}
+			electrons_hcalOverEcal_[i] = electron.hcalOverEcal();
+			electrons_SC_eSuperClusterOverP_[i] = electron.eSuperClusterOverP();
+			electrons_neutralHadronIso_[i] = electron.neutralHadronIso()/electron.pt();
+			electrons_photonIso_[i] = electron.photonIso()/electron.pt(); 
+			electrons_puChargedHadronIso_[i] = electron.puChargedHadronIso()/electron.pt(); 
+			electrons_trackIso_[i] = electron.trackIso()/electron.pt();
+			electrons_hcalDepth1OverEcal_[i] = electron.hcalDepth1OverEcal(); 
+			electrons_hcalDepth2OverEcal_[i] = electron.hcalDepth2OverEcal();  
+			electrons_ecalPFClusterIso_[i] = electron.ecalPFClusterIso()/electron.pt(); 
+			electrons_hcalPFClusterIso_[i] = electron.hcalPFClusterIso()/electron.pt(); 
+			electrons_pfSumPhotonEt_[i] = electron.pfIsolationVariables().sumPhotonEt/electron.pt(); 
+			electrons_pfSumChargedHadronPt_[i] = electron.pfIsolationVariables().sumChargedHadronPt/electron.pt(); 
+			electrons_pfSumNeutralHadronEt_[i] = electron.pfIsolationVariables().sumNeutralHadronEt/electron.pt(); 
+			electrons_pfSumPUPt_[i] = electron.pfIsolationVariables().sumPUPt/electron.pt(); 
+			electrons_dr04TkSumPt_[i] = electron.dr04TkSumPt()/electron.pt();
+			electrons_dr04EcalRecHitSumEt_[i] = electron.dr04EcalRecHitSumEt()/electron.pt(); 
+			electrons_dr04HcalDepth1TowerSumEt_[i] = electron.dr04HcalDepth1TowerSumEt()/electron.pt(); 
+			electrons_dr04HcalDepth1TowerSumEtBc_[i] = electron.dr04HcalDepth1TowerSumEtBc()/electron.pt(); 
+			electrons_dr04HcalDepth2TowerSumEt_[i] = electron.dr04HcalDepth2TowerSumEt()/electron.pt(); 
+			electrons_dr04HcalDepth2TowerSumEtBc_[i] = electron.dr04HcalDepth2TowerSumEtBc()/electron.pt();
+			electrons_dr04HcalTowerSumEt_[i] = electron.dr04HcalTowerSumEt()/electron.pt();
+			electrons_dr04HcalTowerSumEtBc_[i] = electron.dr04HcalTowerSumEtBc()/electron.pt();
+			en_++;
         }
     }
+    muons_number_ = float(mn_);
+    electrons_number_ = float(en_);
 
     //// Note that jets with gluon->bb (cc) and x->bb (cc) are in the same categories
     if(jet.genJet()!=NULL){

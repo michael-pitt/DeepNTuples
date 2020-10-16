@@ -7,6 +7,7 @@
 
 
 #include "../interface/ntuple_pfCands.h"
+#include "../interface/ntuple_SV.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/Candidate/interface/VertexCompositePtrCandidate.h"
 #include "../interface/sorting_modules.h"
@@ -174,6 +175,7 @@ void ntuple_pfCands::initBranches(TTree* tree){
     addBranch(tree,"Cpfcan_VTX_ass",&Cpfcan_VTX_ass_,"Cpfcan_VTX_ass_[n_Cpfcand_]/f");
 
     addBranch(tree,"Cpfcan_fromPV",&Cpfcan_fromPV_,"Cpfcan_fromPV_[n_Cpfcand_]/f");
+    addBranch(tree,"Cpfcan_fromSV",&Cpfcan_fromSV_,"Cpfcan_fromSV_[n_Cpfcand_]/f");
 
     addBranch(tree,"Cpfcan_drminsv",&Cpfcan_drminsv_,"Cpfcan_drminsv_[n_Cpfcand_]/f");
 
@@ -274,14 +276,16 @@ bool ntuple_pfCands::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
     math::XYZVector jetDir = jet.momentum().Unit();
     GlobalVector jetRefTrackDir(jet.px(),jet.py(),jet.pz());
     const reco::Vertex & pv = vertices()->at(0);
-
-
+	
     std::vector<sorting::sortingClass<size_t> > sortedcharged, sortedneutrals;
 
     const float jet_uncorr_pt=jet.correctedJet("Uncorrected").pt();
     const float jet_uncorr_e=jet.correctedJet("Uncorrected").energy();
 
-    TrackInfoBuilder trackinfo(builder);
+	// List of secondary vertices
+	reco::VertexCompositePtrCandidateCollection cpvtx=*secVertices();
+
+    TrackInfoBuilder trackinfo(builder); 
     //create collection first, to be able to do some sorting
     for (unsigned int i = 0; i <  jet.numberOfDaughters(); i++){
         const pat::PackedCandidate* PackedCandidate = dynamic_cast<const pat::PackedCandidate*>(jet.daughter(i));
@@ -316,6 +320,17 @@ bool ntuple_pfCands::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
 
         // get the dr with the closest sv
         float drminpfcandsv_ = mindrsvpfcand(PackedCandidate_);
+		
+		// check if particle from SV:
+		float isSV = 0;
+		for (unsigned int ivtx = 0;  ivtx<cpvtx.size(); ivtx++) {
+			for(auto dptr : cpvtx.at(ivtx).daughterPtrVector()){
+			  if(dptr==jet.daughterPtr(i)) {
+			    isSV = ivtx;
+			    break;
+			  }
+			}
+		}
 
 
         /// This might include more than PF candidates, e.g. Reco muons and could
@@ -348,6 +363,7 @@ bool ntuple_pfCands::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
 
             //https://github.com/cms-sw/cmssw/blob/master/DataFormats/PatCandidates/interface/PackedCandidate.h#L703
 			Cpfcan_fromPV_[fillntupleentry] = PackedCandidate_->fromPV();
+			Cpfcan_fromSV_[fillntupleentry] = isSV;
 
             float tempdontopt=PackedCandidate_->vx();
             tempdontopt++;
