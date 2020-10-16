@@ -214,10 +214,10 @@ public:
     float y_pt_dr_log_;
 
     static constexpr std::size_t max_num_lept = 5;
-    int muons_isLooseMuon_[max_num_lept];
-    int muons_isTightMuon_[max_num_lept];
-    int muons_isSoftMuon_[max_num_lept];
-    int muons_isHighPtMuon_[max_num_lept]; 
+    float muons_isLooseMuon_[max_num_lept];
+    float muons_isTightMuon_[max_num_lept];
+    float muons_isSoftMuon_[max_num_lept];
+    float muons_isHighPtMuon_[max_num_lept]; 
     float muons_pt_[max_num_lept]; 
     float muons_relEta_[max_num_lept]; 
     float muons_relPhi_[max_num_lept]; 
@@ -229,8 +229,8 @@ public:
     float electrons_energy_[max_num_lept];
     float electrons_charge_[max_num_lept];
 
-    int muons_number_ = 0;
-    int electrons_number_ = 0;
+    float muons_number_ = 0;
+    float electrons_number_ = 0;
 
     float gen_pt_Recluster_;
     float gen_pt_WithNu_;

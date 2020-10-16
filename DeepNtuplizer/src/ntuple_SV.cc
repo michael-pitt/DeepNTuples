@@ -41,6 +41,7 @@ void ntuple_SV::initBranches(TTree* tree){
     addBranch(tree,(prefix_+"sv_phirel").c_str()         ,&sv_phirel_         ,(prefix_+"sv_phirel_["+prefix_+"sv_num_]/f").c_str()         );
     addBranch(tree,(prefix_+"sv_deltaR").c_str()         ,&sv_deltaR_         ,(prefix_+"sv_deltaR_["+prefix_+"sv_num_]/f").c_str()         );
     addBranch(tree,(prefix_+"sv_mass").c_str()        ,&sv_mass_        ,(prefix_+"sv_mass_["+prefix_+"sv_num_]/f").c_str()        );
+    addBranch(tree,(prefix_+"sv_charge").c_str()      ,&sv_charge_      ,(prefix_+"sv_charge_["+prefix_+"sv_num_]/f").c_str()        );
     addBranch(tree,(prefix_+"sv_ntracks").c_str()     ,&sv_ntracks_     ,(prefix_+"sv_ntracks_["+prefix_+"sv_num_]/f").c_str()     );
     addBranch(tree,(prefix_+"sv_chi2").c_str()        ,&sv_chi2_        ,(prefix_+"sv_chi2_["+prefix_+"sv_num_]/f").c_str()        );
     addBranch(tree,(prefix_+"sv_ndf").c_str()         ,&sv_ndf_         ,(prefix_+"sv_ndf_["+prefix_+"sv_num_]/f").c_str()         );
@@ -116,6 +117,7 @@ bool ntuple_SV::fillBranches(const pat::Jet & jet, const size_t& jetidx, const  
             sv_phirel_[sv_num_]       = catchInfsAndBound(fabs(reco::deltaPhi(sv.phi(),jet.phi()))-0.5,0,-2,0);
             sv_deltaR_[sv_num_]       = catchInfsAndBound(fabs(reco::deltaR(sv,jet))-0.5,0,-2,0);
             sv_mass_[sv_num_]         = sv.mass();
+            sv_charge_[sv_num_]       = sv.charge();
             sv_ntracks_[sv_num_]      = sv.numberOfDaughters();
             sv_chi2_[sv_num_]         = sv.vertexChi2();
             sv_ndf_[sv_num_]          = sv.vertexNdof();

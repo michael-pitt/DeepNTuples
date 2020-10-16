@@ -107,13 +107,13 @@ void ntuple_JetInfo::initBranches(TTree* tree){
 
     // in the jet
 
-    addBranch(tree,"muons_number", &muons_number_, "muons_number_/i");
-    addBranch(tree,"electrons_number", &electrons_number_, "electrons_number_/i");
+    addBranch(tree,"muons_number", &muons_number_, "muons_number_/f");
+    addBranch(tree,"electrons_number", &electrons_number_, "electrons_number_/f");
 
-    addBranch(tree,"muons_isLooseMuon", &muons_isLooseMuon_, "muons_isLooseMuon_[muons_number_]/i");
-    addBranch(tree,"muons_isTightMuon", &muons_isTightMuon_, "muons_isTightMuon_[muons_number_]/i");
-    addBranch(tree,"muons_isSoftMuon", &muons_isSoftMuon_, "muons_isSoftMuon_[muons_number_]/i");
-    addBranch(tree,"muons_isHighPtMuon", &muons_isHighPtMuon_, "muons_isHighPtMuon_[muons_number_]/i");
+    addBranch(tree,"muons_isLooseMuon", &muons_isLooseMuon_, "muons_isLooseMuon_[muons_number_]/f");
+    addBranch(tree,"muons_isTightMuon", &muons_isTightMuon_, "muons_isTightMuon_[muons_number_]/f");
+    addBranch(tree,"muons_isSoftMuon", &muons_isSoftMuon_, "muons_isSoftMuon_[muons_number_]/f");
+    addBranch(tree,"muons_isHighPtMuon", &muons_isHighPtMuon_, "muons_isHighPtMuon_[muons_number_]/f");
     addBranch(tree,"muons_pt", &muons_pt_, "muons_pt_[muons_number_]/f");
     addBranch(tree,"muons_relEta", &muons_relEta_, "muons_relEta_[muons_number_]/f");
     addBranch(tree,"muons_relPhi", &muons_relPhi_, "muons_relPhi_[muons_number_]/f");
@@ -308,8 +308,8 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
     auto muIds = deep_ntuples::jet_muonsIds(jet,*muonsHandle);
     auto elecIds = deep_ntuples::jet_electronsIds(jet,*electronsHandle);
 
-    muons_number_ = muIds.size();
-    electrons_number_ = elecIds.size();
+    muons_number_ = float(muIds.size());
+    electrons_number_ = float(elecIds.size());
 
     float etasign = 1.;
     if (jet.eta()<0) etasign = -1.;
@@ -317,10 +317,10 @@ bool ntuple_JetInfo::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
     for(std::size_t i=0; i<max_num_lept; i++) {
         if (i < muIds.size()) {
             const auto & muon = (*muonsHandle).at(muIds.at(i));
-            muons_isLooseMuon_[i] = muon.isLooseMuon();
-            muons_isTightMuon_[i] = muon.isTightMuon(vertices()->at(0));
-            muons_isSoftMuon_[i] = muon.isSoftMuon(vertices()->at(0));
-            muons_isHighPtMuon_[i] = muon.isHighPtMuon(vertices()->at(0));
+            muons_isLooseMuon_[i] = float(muon.isLooseMuon());
+            muons_isTightMuon_[i] = float(muon.isTightMuon(vertices()->at(0)));
+            muons_isSoftMuon_[i] = float(muon.isSoftMuon(vertices()->at(0)));
+            muons_isHighPtMuon_[i] = float(muon.isHighPtMuon(vertices()->at(0)));
             muons_pt_[i] = muon.pt();
             muons_relEta_[i] = etasign*(muon.eta()-jet.eta());
             muons_relPhi_[i] = reco::deltaPhi(muon.phi(),jet.phi());

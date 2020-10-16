@@ -230,8 +230,8 @@ void ntuple_pfCands::initBranches(TTree* tree){
     addBranch(tree,"Cpfcan_chi2",&Cpfcan_chi2_,"Cpfcan_chi2_[n_Cpfcand_]/f");
     addBranch(tree,"Cpfcan_quality",&Cpfcan_quality_,"Cpfcan_quality_[n_Cpfcand_]/f");
 
-    addBranch(tree,"Cpfcan_charge",&Cpfcan_charge_,"Cpfcan_charge_[n_Cpfcand_]/I");
-	addBranch(tree,"Cpfcan_pdgId",&Cpfcan_pdgId_,"Cpfcan_pdgId_[n_Cpfcand_]/I");
+    addBranch(tree,"Cpfcan_charge",&Cpfcan_charge_,"Cpfcan_charge_[n_Cpfcand_]/f");
+	addBranch(tree,"Cpfcan_pdgId",&Cpfcan_pdgId_,"Cpfcan_pdgId_[n_Cpfcand_]/f");
 
     //Neutral Pf candidates
     addBranch(tree,"n_Npfcand", &n_Npfcand_,"n_Npfcand_/i");
@@ -346,7 +346,8 @@ bool ntuple_pfCands::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
             Cpfcan_dz_[fillntupleentry] = PackedCandidate_->dz();
             Cpfcan_VTX_ass_[fillntupleentry] = PackedCandidate_->pvAssociationQuality();
 
-            Cpfcan_fromPV_[fillntupleentry] = PackedCandidate_->fromPV();
+            //https://github.com/cms-sw/cmssw/blob/master/DataFormats/PatCandidates/interface/PackedCandidate.h#L703
+			Cpfcan_fromPV_[fillntupleentry] = PackedCandidate_->fromPV();
 
             float tempdontopt=PackedCandidate_->vx();
             tempdontopt++;
@@ -410,7 +411,7 @@ bool ntuple_pfCands::fillBranches(const pat::Jet & jet, const size_t& jetidx, co
             }
 
             int pdgId = PackedCandidate_->pdgId();
-            int abspdgId = abs(pdgId);
+            float abspdgId = abs(pdgId);
 			Cpfcan_pdgId_[fillntupleentry] = abspdgId;
 			Cpfcan_charge_[fillntupleentry] = (abspdgId<20)  ?  -pdgId / abspdgId : pdgId / abspdgId;
             Cpfcan_lostInnerHits_[fillntupleentry] = catchInfs(PackedCandidate_->lostInnerHits(),2);

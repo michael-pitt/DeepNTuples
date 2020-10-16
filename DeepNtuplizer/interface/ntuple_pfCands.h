@@ -102,8 +102,8 @@ private:
     // TODO (comment of Markus Stoye) add reco information
     float Cpfcan_isMu_[max_pfcand_]; // pitty that the quality is missing
     float Cpfcan_isEl_[max_pfcand_]; // pitty that the quality is missing
-    int Cpfcan_charge_[max_pfcand_];
-    int Cpfcan_pdgId_[max_pfcand_];
+    float Cpfcan_charge_[max_pfcand_];
+    float Cpfcan_pdgId_[max_pfcand_];
 
     // track quality
     float Cpfcan_lostInnerHits_[max_pfcand_];

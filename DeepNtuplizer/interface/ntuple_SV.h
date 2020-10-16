@@ -42,6 +42,7 @@ private:
     float sv_phirel_[max_sv];
     float sv_deltaR_[max_sv];
     float sv_mass_[max_sv];
+    float sv_charge_[max_sv];
     //  float sv_phirel_[max_sv];
     //  float sv_etarel_[max_sv];
     float sv_ntracks_[max_sv];
